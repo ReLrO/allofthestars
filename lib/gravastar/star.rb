@@ -7,7 +7,7 @@ module Gravastar
 
     attribute :cluster_id, String
     attribute :type,       String
-    attribute :url,        String
+    attribute :source_url, String
     attribute :content,    String
     attribute :custom,     Hash
     attribute :created_at, Time
@@ -35,6 +35,17 @@ module Gravastar
         end
         s
       end
+    end
+
+    def as_json(options = {})
+      { :content     => content,
+        :type        => type,
+        :custom      => custom,
+        :url         => "/stars/#{id}",
+        :cluster_url => "/clusters/#{cluster_id}",
+        :source_url  => source_url,
+        :created_at  => created_at.iso8601
+      }
     end
   end
 end

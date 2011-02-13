@@ -38,7 +38,7 @@
         ]},
 
         {field, [
-          {name, "url"},
+          {name, "source_url"},
           {required, true},
           {analyzer_factory, {erlang, text_analyzers,
               noop_analyzer_factory}}
