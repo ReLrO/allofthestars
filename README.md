@@ -13,6 +13,30 @@ Redis/Riak testbed.  Probably not useful for anyone.
   index.
 * `search-cmd install stars` to start autoindexing the stars.
 
+## USAGE
+
+All JSON API for now.  The actual serialization and fields will likely
+change.
+
+# create a cluster
+POST /clusters
+
+# create a star
+POST /clusters/:id/stars
+
+# get a cluster
+GET /clusters/:id
+
+# get a star
+GET /stars/:id
+
+# get stars in a cluster
+GET /clusters/:id/stars
+  ?q=blah      - search content
+  ?t=Campfire  - filter by type
+  ?custom[foo] - filter by custom field
+  ?start       - the starting result of the query (pagination)
+
 ## Tests
 
 No tests.  *shrug* lol
