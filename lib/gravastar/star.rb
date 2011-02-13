@@ -1,5 +1,7 @@
 module Gravastar
   class Star
+    DEFAULT_SEARCH_OPTIONS = {"q.op" => "and", "sort" => "stars.created_at", "rows" => 50}
+
     include Toy::Store
     store :riak, Riak::Client.new['stars']
 
@@ -10,9 +12,8 @@ module Gravastar
     attribute :custom,     Hash
     attribute :created_at, Time
 
-    DEFAULT = {"q.op" => "and", "sort" => "stars.created_at", "rows" => 50}
-    def self.search(query, options = {})
-      options = DEFAULT.merge(options)
+    def self.search(query = {}, options = {})
+      options = DEFAULT_SEARCH_OPTIONS.merge(options)
       query   = query.inject([]) do |arr, (key, value)|
         value.gsub! /"/, ''
         arr << %(#{key}:"#{value}")
@@ -20,6 +21,7 @@ module Gravastar
       store.client.client.search(query, options)
     end
 
+    # Converts the Riak Search results that Ripple gives us into STARS.
     def self.from_search(resp)
       resp['response']['docs'].map do |doc|
         s = new(:id => doc['id'])
