@@ -8,3 +8,7 @@ Redis/Riak testbed.  Probably not useful for anyone.
 * Setup Redis and Riak Search
 * `ruby app.rb` to start an IRB console
 * `GRAVASTAR_ENV=irb ruby app.rb` to start a Sinatra server.
+
+## Tests
+
+No tests.  *shrug*
