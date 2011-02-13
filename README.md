@@ -32,10 +32,11 @@ GET /stars/:id
 
 # get stars in a cluster
 GET /clusters/:id/stars
-  ?q=blah      - search content
-  ?t=Campfire  - filter by type
-  ?custom[foo] - filter by custom field
-  ?start       - the starting result of the query (pagination)
+
+* `?q=blah` - search content
+* `?t=Campfire` - filter by type
+* `?custom[foo]` - filter by custom field
+* `?start` - the starting result of the query (pagination)
 
 ## Tests
 
