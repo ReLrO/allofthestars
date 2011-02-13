@@ -4,9 +4,10 @@ module Gravastar
     store :riak, Riak::Client.new['stars']
 
     attribute :cluster_id, String
-    attribute :type,       Hash
+    attribute :type,       String
     attribute :url,        String
     attribute :content,    String
+    attribute :custom,     Hash
     attribute :created_at, Time
   end
 end
