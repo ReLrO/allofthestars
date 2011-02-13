@@ -1,5 +1,5 @@
 
-%% Schema for 'users'
+%% Schema for 'stars'
 
 {
     schema,
