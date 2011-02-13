@@ -50,14 +50,14 @@ end
 
 post "/clusters" do
   data = ActiveSupport::JSON.decode(request.body.read)
-  cluster = Cluster.create(data['cluster'])
+  cluster = Cluster.create(data)
   response['Location'] = "/clusters/#{cluster.id}"
   [201, cluster.to_json]
 end
 
 post "/clusters/:id/stars" do
   if cluster = Cluster.get(params[:id])
-    data = ActiveSupport::JSON.decode(request.body.read)['star']
+    data = ActiveSupport::JSON.decode(request.body.read)
     data['cluster_id'] = cluster.id
     data['created_at'] = Time.now.utc
     star = Star.create(data)
