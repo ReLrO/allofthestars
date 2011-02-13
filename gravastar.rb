@@ -3,7 +3,7 @@ require 'bundler'
 
 module Gravastar
   class << self
-    attr_accessor :env
+    attr_accessor :env, :riak_client
   end
   self.env = (ENV['GRAVASTAR_ENV'] || :dev).to_sym
 end
@@ -11,6 +11,7 @@ end
 Bundler.require(:default, Gravastar.env)
 $LOAD_PATH.unshift File.expand_path('../lib', __FILE__)
 
+Gravastar.riak_client = Riak::Client.new
 require 'gravastar/cluster'
 require 'gravastar/star'
 

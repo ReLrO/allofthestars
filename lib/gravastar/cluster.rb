@@ -1,7 +1,7 @@
 module Gravastar
   class Cluster
     include Toy::Store, ActiveModel::Callbacks
-    store :riak, Riak::Client.new['users']
+    store :riak, Gravastar.riak_client['clusters']
 
     attribute :name,  String
     attribute :email, String

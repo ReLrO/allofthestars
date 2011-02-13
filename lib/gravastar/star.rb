@@ -3,7 +3,7 @@ module Gravastar
     DEFAULT_SEARCH_OPTIONS = {"q.op" => "and", "sort" => "stars.created_at", "rows" => 50}
 
     include Toy::Store
-    store :riak, Riak::Client.new['stars']
+    store :riak, Gravastar.riak_client['stars']
 
     attribute :cluster_id, String
     attribute :type,       String
