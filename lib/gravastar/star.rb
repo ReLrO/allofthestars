@@ -10,17 +10,17 @@ module Gravastar
     attribute :custom,     Hash
     attribute :created_at, Time
 
-    def self.search(query, options = {})
-      search_to_toys(search_results(query, options))
-    end
-
     DEFAULT = {"q.op" => "and", "sort" => "stars.created_at", "rows" => 50}
-    def self.search_results(query, options = {})
+    def self.search(query, options = {})
       options = DEFAULT.merge(options)
+      query   = query.inject([]) do |arr, (key, value)|
+        value.gsub! /"/, ''
+        arr << %(#{key}:"#{value}")
+      end.join(" AND ")
       store.client.client.search(query, options)
     end
 
-    def self.search_to_toys(resp)
+    def self.from_search(resp)
       resp['response']['docs'].map do |doc|
         s = new(:id => doc['id'])
         doc['fields'].each do |key, value|

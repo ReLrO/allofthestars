@@ -7,11 +7,8 @@ module Gravastar
     attribute :email, String
 
     def search(query=nil, options = {})
-      Gravastar::Star.search(%(stars.cluster_id:"#{id}" #{query}).strip, options)
-    end
-
-    def search_results(query=nil, options = {})
-      Gravastar::Star.search_results(%(stars.cluster_id:"#{id}" #{query}).strip, options)
+      query['stars.cluster_id'] = id
+      Gravastar::Star.search(query, options)
     end
   end
 end
