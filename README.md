@@ -6,8 +6,8 @@ Redis/Riak testbed.  Probably not useful for anyone.
 ## Setup
 
 * `brew install redis riak-search`
-* `ruby app.rb` to start an IRB console
-* `GRAVASTAR_ENV=irb ruby app.rb` to start a Sinatra server.
+* `ruby gravastar.rb` to start an IRB console
+* `GRAVASTAR_ENV=irb ruby gravastar.rb` to start a Sinatra server.
 * `riaksearch start` to start riak
 * `search-cmd set-schema stars db/stars.erl` to setup the
   index.
