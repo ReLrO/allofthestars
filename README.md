@@ -19,13 +19,13 @@ All JSON API for now.  The actual serialization and fields will likely
 change.
 
 * create a cluster
-    POST /clusters
+      POST /clusters
 * create a star
-    POST /clusters/:id/stars
+      POST /clusters/:id/stars
 * get a cluster
-    GET /clusters/:id
+      GET /clusters/:id
 * get a star
-    GET /stars/:id
+      GET /stars/:id
 * get stars in a cluster
     GET /clusters/:id/stars
   * `?q=blah` - search content
