@@ -27,7 +27,7 @@ change.
 * get a star
   * `GET /stars/:id`
 * get stars in a cluster
-    GET /clusters/:id/stars
+  * `GET /clusters/:id/stars`
   * `?q=blah` - search content
   * `?t=Campfire` - filter by type
   * `?custom[foo]` - filter by custom field
