@@ -11,7 +11,7 @@ end
 Bundler.require(:default, Gravastar.env)
 $LOAD_PATH.unshift File.expand_path('../lib', __FILE__)
 
-Gravastar.riak_client = Riak::Client.new
+Gravastar.riak_client = Riak::Client.new(:http_backend => :Excon)
 require 'gravastar/cluster'
 require 'gravastar/star'
 

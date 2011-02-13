@@ -3,6 +3,8 @@
 I don't even know what this is going to be, yet.  Right now, it's just a
 Riak Search testbed.  Probably not useful for anyone.
 
+![](https://img.skitch.com/20110213-kemkcgsh8dwet8nxktscw9fi69.jpg)
+
 ## Setup
 
 Setup the rubies:

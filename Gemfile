@@ -1,5 +1,7 @@
 source "http://rubygems.org"
 
+gem 'yajl-ruby', :require => 'yajl'
+gem 'excon'
 gem "toystore"
 gem "adapter"
 gem "adapter-riak",  :require => 'adapter/riak'
