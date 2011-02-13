@@ -16,6 +16,23 @@ get "/stars/:id" do
   end
 end
 
+get "/clusters/:id/stars" do
+  if cluster = Cluster.get(params[:id])
+    query = ""
+    options = {}
+    if q = params[:q]
+      query << %(stars.content:"#{q}")
+    end
+    if start = params[:start]
+      options["start"] = start.to_i
+    end
+    method = params[:debug] ? :search_results : :search
+    cluster.send(method, query, options).to_json
+  else
+    not_found
+  end
+end
+
 post "/clusters" do
   data = ActiveSupport::JSON.decode(request.body.read)
   cluster = Cluster.create(data['cluster'])

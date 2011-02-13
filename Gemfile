@@ -5,7 +5,7 @@ gem "adapter"
 gem "adapter-riak",  :require => 'adapter/riak'
 gem "adapter-redis", :require => 'adapter/redis'
 gem "redis"
-gem "riak-client"
+gem "riak-client", :require => 'riak/search'
 
 group :production do
   gem "thin"

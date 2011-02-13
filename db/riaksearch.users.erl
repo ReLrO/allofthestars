@@ -2,61 +2,52 @@
 %% Schema for 'users'
 
 {
-    schema, 
+    schema,
     [
         {version, "1.1"},
         {n_val, 3},
-        {default_field, "value"},
-        {analyzer_factory, {erlang, text_analyzers, whitespace_analyzer_factory}}
+        {default_field, "content"},
+        {analyzer_factory, {erlang, text_analyzers, standard_analyzer_factory}}
     ],
     [
-        %% Field names ending in "_num" are indexed as integers
+        %% Field names ending in "_at" are indexed as dates
+        %% _at is a ruby convention
         {dynamic_field, [
-            {name, "*_num"},
-            {type, integer},
-            {analyzer_factory, {erlang, text_analyzers, integer_analyzer_factory}}
-        ]},
-
-        %% Field names ending in "_int" are indexed as integers
-        {dynamic_field, [
-            {name, "*_int"},
-            {type, integer},
-            {analyzer_factory, {erlang, text_analyzers, integer_analyzer_factory}}
-        ]},
-
-        %% Field names ending in "_dt" are indexed as dates
-        {dynamic_field, [
-            {name, "*_dt"},
+            {name, "*_at"},
             {type, date},
             {analyzer_factory, {erlang, text_analyzers, noop_analyzer_factory}}
         ]},
 
-        %% Field names ending in "_date" are indexed as dates
-        {dynamic_field, [
-            {name, "*_date"},
-            {type, date},
-            {analyzer_factory, {erlang, text_analyzers, noop_analyzer_factory}}
+        {field, [
+          {name, "cluster_id"},
+          {required, true},
+          {analyzer_factory, {erlang, text_analyzers,
+              noop_analyzer_factory}}
         ]},
 
-        %% Field names ending in "_txt" are indexed as full text"
-        {dynamic_field, [
-            {name, "*_txt"},
-            {type, string},
-            {analyzer_factory, {erlang, text_analyzers, standard_analyzer_factory}}
+        {field, [
+          {name, "content"},
+          {required, true}
         ]},
 
-        %% Field names ending in "_text" are indexed as full text"
-        {dynamic_field, [
-            {name, "*_text"},
-            {type, string},
-            {analyzer_factory, {erlang, text_analyzers, standard_analyzer_factory}}
+        {field, [
+          {name, "type"},
+          {required, true},
+          {analyzer_factory, {erlang, text_analyzers,
+              noop_analyzer_factory}}
         ]},
 
-        %% Everything else is a string
+        {field, [
+          {name, "url"},
+          {required, true},
+          {analyzer_factory, {erlang, text_analyzers,
+              noop_analyzer_factory}}
+        ]},
+
         {dynamic_field, [
-            {name, "*"},
-            {type, string},
-            {analyzer_factory, {erlang, text_analyzers, whitespace_analyzer_factory}}
+          {name, "custom_*"},
+          {analyzer_factory, {erlang, text_analyzers,
+              noop_analyzer_factory}}
         ]}
     ]
 }.
