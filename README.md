@@ -1,19 +1,37 @@
 # Gravastar
 
 I don't even know what this is going to be, yet.  Right now, it's just a
-Redis/Riak testbed.  Probably not useful for anyone.
+Riak Search testbed.  Probably not useful for anyone.
 
 ## Setup
 
-* `brew install redis riak-search`
-* `ruby gravastar.rb` to start an IRB console
-* `GRAVASTAR_ENV=irb ruby gravastar.rb` to start a Sinatra server.
-* `riaksearch start` to start riak
-* `search-cmd set-schema stars db/stars.erl` to setup the
-  index.
-* `search-cmd install stars` to start autoindexing the stars.
+Setup the rubies:
+
+    gem install bundler
+    bundle install
+
+And the Riaks:
+
+    brew install riak-search # or equivalent
+    riaksearch start
+
+    # setup the search schema
+    search-cmd set-schema stars db/stars.erl
+    search-cmd set-schema clusters db/clusters.erl
+
+    # setup the automatic riak kv => riak search hooks
+    search-cmd install stars
+    search-cmd install clusters
 
 ## USAGE
+
+You can start an irb console to play around:
+
+    ruby gravastar.rb
+
+If you want to access it over HTTP, start the sinatra API server:
+
+    GRAVASTAR_ENV=production ruby gravastar.rb
 
 All JSON API for now.  The actual serialization and fields will likely
 change.
