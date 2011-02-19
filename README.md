@@ -27,14 +27,6 @@ And the Riaks:
 
 ## USAGE
 
-You can start an irb console to play around:
-
-    ruby allofthestars.rb
-
-If you want to access it over HTTP, start the sinatra API server:
-
-    STARS_ENV=production ruby allofthestars.rb
-
 All JSON API for now.  The actual serialization and fields will likely
 change.
 

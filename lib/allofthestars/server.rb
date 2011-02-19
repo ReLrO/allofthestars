@@ -7,11 +7,11 @@ module AllOfTheStars
   end
 end
 
-Bundler.require(:default)
-$LOAD_PATH.unshift File.expand_path('../lib', __FILE__)
+Bundler.require(:default, :server)
+$LOAD_PATH.unshift File.expand_path('../../../lib', __FILE__)
 
 options = {:http_backend => :Excon}
-config  = File.expand_path('../db/config.json', __FILE__)
+config  = File.expand_path('../../../db/config.json', __FILE__)
 if File.exist?(config)
   data = ActiveSupport::JSON.decode(IO.read(config))
   data.each do |key, value|
@@ -20,5 +20,5 @@ if File.exist?(config)
 end
 
 AllOfTheStars.riak_client = Riak::Client.new(options)
-require 'allofthestars/cluster'
-require 'allofthestars/star'
+require 'allofthestars/server/cluster'
+require 'allofthestars/server/star'
