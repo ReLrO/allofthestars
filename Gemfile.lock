@@ -15,8 +15,6 @@ GEM
       adapter (~> 0.5.1)
       riak-client (~> 0.8.3)
     builder (2.1.2)
-    daemons (1.1.0)
-    eventmachine (0.12.10)
     excon (0.5.5)
     i18n (0.5.0)
     rack (1.2.1)
@@ -28,10 +26,6 @@ GEM
     sinatra (1.1.2)
       rack (~> 1.1)
       tilt (~> 1.2)
-    thin (1.2.7)
-      daemons (>= 1.0.9)
-      eventmachine (>= 0.12.6)
-      rack (>= 1.0.0)
     tilt (1.2.2)
     toystore (0.6.3)
       activemodel (~> 3.0.3)
@@ -51,6 +45,5 @@ DEPENDENCIES
   redis
   riak-client
   sinatra
-  thin
   toystore
   yajl-ruby
