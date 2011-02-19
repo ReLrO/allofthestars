@@ -14,9 +14,15 @@ GEM
       activesupport (~> 3.0.3)
       adapter (~> 0.5.1)
       riak-client (~> 0.8.3)
+    addressable (2.2.4)
     builder (2.1.2)
     excon (0.5.5)
+    faraday (0.5.6)
+      addressable (~> 2.2.4)
+      multipart-post (~> 1.1.0)
+      rack (>= 1.1.0, < 2)
     i18n (0.5.0)
+    multipart-post (1.1.0)
     rack (1.2.1)
     redis (2.1.1)
     riak-client (0.8.3)
@@ -42,6 +48,7 @@ DEPENDENCIES
   adapter-redis
   adapter-riak
   excon
+  faraday
   redis
   riak-client
   sinatra

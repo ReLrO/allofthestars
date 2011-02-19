@@ -1,5 +1,6 @@
 source "http://rubygems.org"
 
+gem 'excon'
 gem 'yajl-ruby', :require => 'yajl'
 
 group :client do
@@ -7,7 +8,6 @@ group :client do
 end
 
 group :server do
-  gem 'excon'
   gem "toystore"
   gem "adapter"
   gem "adapter-riak",  :require => 'adapter/riak'
