@@ -1,7 +1,7 @@
-module Gravastar
+module AllOfTheStars
   class Cluster
     include Toy::Store, ActiveModel::Callbacks
-    store :riak, Gravastar.riak_client['clusters']
+    store :riak, AllOfTheStars.riak_client['clusters']
 
     attribute :name,  String
     attribute :email, String
@@ -10,7 +10,7 @@ module Gravastar
 
     def search(query={}, options = {})
       query['stars.cluster_id'] = id
-      Gravastar::Star.search(query, options)
+      AllOfTheStars::Star.search(query, options)
     end
 
     def as_json(options = {})

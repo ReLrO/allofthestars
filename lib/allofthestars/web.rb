@@ -1,4 +1,4 @@
-include Gravastar
+include AllOfTheStars
 
 get "/clusters/:id" do
   if cluster = Cluster.get(params[:id])

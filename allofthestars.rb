@@ -1,22 +1,22 @@
 require 'rubygems'
 require 'bundler'
 
-module Gravastar
+module AllOfTheStars
   class << self
     attr_accessor :env, :riak_client
   end
-  self.env = (ENV['GRAVASTAR_ENV'] || :dev).to_sym
+  self.env = (ENV['STARS_ENV'] || :dev).to_sym
 end
 
-Bundler.require(:default, Gravastar.env)
+Bundler.require(:default, AllOfTheStars.env)
 $LOAD_PATH.unshift File.expand_path('../lib', __FILE__)
 
-Gravastar.riak_client = Riak::Client.new(:http_backend => :Excon)
-require 'gravastar/cluster'
-require 'gravastar/star'
+AllOfTheStars.riak_client = Riak::Client.new(:http_backend => :Excon)
+require 'allofthestars/cluster'
+require 'allofthestars/star'
 
 if defined?(Sinatra)
-  require 'gravastar/web'
+  require 'allofthestars/web'
 else
   require 'irb'
   # http://jameskilton.com/2009/04/02/embedding-irb-into-your-ruby-application/

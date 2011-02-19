@@ -1,4 +1,4 @@
-# Gravastar
+# AllOfTheStars
 
 I don't even know what this is going to be, yet.  Right now, it's just a
 Riak Search testbed.  Probably not useful for anyone.
@@ -29,11 +29,11 @@ And the Riaks:
 
 You can start an irb console to play around:
 
-    ruby gravastar.rb
+    ruby allofthestars.rb
 
 If you want to access it over HTTP, start the sinatra API server:
 
-    GRAVASTAR_ENV=production ruby gravastar.rb
+    STARS_ENV=production ruby allofthestars.rb
 
 All JSON API for now.  The actual serialization and fields will likely
 change.
