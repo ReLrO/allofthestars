@@ -16,6 +16,7 @@
             {name, "*_at"},
             {type, date},
             {analyzer_factory, {erlang, text_analyzers, noop_analyzer_factory}}
+            %%{analyzer_factory, {erlang, gravastar_analyzers, iso8601_analyzer_factory}}
         ]},
 
         {field, [
