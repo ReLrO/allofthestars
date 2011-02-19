@@ -11,6 +11,10 @@ end
 Bundler.require(:default, AllOfTheStars.env)
 $LOAD_PATH.unshift File.expand_path('../lib', __FILE__)
 
-AllOfTheStars.riak_client = Riak::Client.new(:http_backend => :Excon)
+options = {:http_backend => :Excon}
+if AllOfTheStars.env == :production
+  options[:host] = 'riak1.allofthestars.com'
+end
+AllOfTheStars.riak_client = Riak::Client.new(options)
 require 'allofthestars/cluster'
 require 'allofthestars/star'
