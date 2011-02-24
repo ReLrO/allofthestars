@@ -1,4 +1,5 @@
 require 'sinatra/base'
+require 'allofthestars/server'
 
 module AllOfTheStars
   class Web < Sinatra::Base

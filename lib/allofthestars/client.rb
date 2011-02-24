@@ -1,8 +1,6 @@
 require 'faraday'
 require 'yajl'
 
-require 'faraday'
-
 module AllOfTheStars
   class Client
     Builder = Faraday::Builder.new do |b|
@@ -47,6 +45,10 @@ module AllOfTheStars
     #              :custom     - Optional open Hash of attributes.
     def add_star(cluster_id, data = {})
       @http.post("/clusters/#{cluster_id}/stars", data)
+    end
+
+    def inspect
+      %(#<#{self.class.name} #{@http.build_url(nil).to_s}>)
     end
   end
 end
