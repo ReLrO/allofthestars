@@ -1,7 +1,6 @@
 module AllOfTheStars
   class Star
-    DEFAULT_SEARCH_OPTIONS = {"q.op" => "and", "sort" => "stars.created_at", "rows" => 50}
-
+    extend Searchable
     include Toy::Store
     store :riak, AllOfTheStars.riak_client['stars']
 
@@ -12,29 +11,10 @@ module AllOfTheStars
     attribute :custom,     Hash
     attribute :created_at, Time
 
-    def self.search(query = {}, options = {})
-      options = DEFAULT_SEARCH_OPTIONS.merge(options)
-      query   = query.inject([]) do |arr, (key, value)|
-        value.gsub! /"/, ''
-        arr << %(#{key}:"#{value}")
-      end.join(" AND ")
-      store.client.client.search(query, options)
-    end
+    default_search_options.update "sort" => "stars.created_at"
 
-    # Converts the Riak Search results that Ripple gives us into STARS.
-    def self.from_search(resp)
-      resp['response']['docs'].map do |doc|
-        s = new(:id => doc['id'])
-        doc['fields'].each do |key, value|
-          case key
-            when /^custom_(.*)/
-              s.custom[$1] = value
-            else
-              s[key] = value
-          end
-        end
-        s
-      end
+    def self.search(query = {}, options = {})
+      search_riak(query, options)
     end
 
     def as_json(options = {})

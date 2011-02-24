@@ -20,5 +20,6 @@ if File.exist?(config)
 end
 
 AllOfTheStars.riak_client = Riak::Client.new(options)
+require 'allofthestars/server/searchable'
 require 'allofthestars/server/cluster'
 require 'allofthestars/server/star'

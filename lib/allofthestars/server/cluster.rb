@@ -1,6 +1,8 @@
 module AllOfTheStars
   class Cluster
+    extend Searchable
     include Toy::Store, ActiveModel::Callbacks
+
     store :riak, AllOfTheStars.riak_client['clusters']
 
     attribute :name,  String
@@ -11,6 +13,10 @@ module AllOfTheStars
     def search(query={}, options = {})
       query['stars.cluster_id'] = id
       AllOfTheStars::Star.search(query, options)
+    end
+
+    def self.by_email(email)
+      search_riak('clusters.email' => email)
     end
 
     def as_json(options = {})
