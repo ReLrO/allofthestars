@@ -9,9 +9,15 @@ module AllOfTheStars
       b.response :yajl
     end
 
+    class << self
+      attr_accessor :default_url
+    end
+    self.default_url = 'http://allofthestars.com'
+
     attr_reader :http
 
-    def initialize(url = 'http://allofthestars.com')
+    def initialize(url = nil)
+      url ||= self.class.default_url
       @http = Faraday::Connection.new(url, :builder => Builder)
     end
 

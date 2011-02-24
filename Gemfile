@@ -16,3 +16,7 @@ group :server do
   gem "riak-client"
   gem "sinatra"
 end
+
+group :importers do
+  gem "twitter"
+end
