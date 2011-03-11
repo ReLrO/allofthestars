@@ -66,8 +66,8 @@ module AllOfTheStars
         data['cluster_id'] = cluster.id
         data['created_at'] =
           case time = data['created_at'].to_s
-            when /^\d+$/ then time
-            else Time.now.to_i
+            when /^\d+$/ then Time.at(time.to_i).utc
+            else              Time.now.utc
           end
         star = Star.create(data)
         response['Location'] = "/stars/#{star.id}"
