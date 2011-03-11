@@ -64,7 +64,11 @@ module AllOfTheStars
       if cluster = Cluster.get(params[:id])
         data = ActiveSupport::JSON.decode(request.body.read)
         data['cluster_id'] = cluster.id
-        data['created_at'] = Time.now.utc
+        data['created_at'] =
+          case time = data['created_at'].to_s
+            when /^\d+$/ then time
+            else Time.now.to_i
+          end
         star = Star.create(data)
         response['Location'] = "/stars/#{star.id}"
         [201, star.to_json]

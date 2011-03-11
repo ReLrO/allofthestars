@@ -1,4 +1,5 @@
 require 'allofthestars/client'
+require 'time'
 require 'pp'
 
 module AllOfTheStars
@@ -9,6 +10,7 @@ module AllOfTheStars
     end
 
     def import_tweet_status(status)
+      created = Time.parse(status.created_at)
       data = {
         :type       => "Twitter",
         :content    => status.text,
@@ -19,11 +21,12 @@ module AllOfTheStars
         :custom     => {
           :user => status.user.screen_name,
           :retweet_count => status.retweet_count.to_i
-        }
+        },
+        :created_at => created.to_i
       }
 
       if in_reply_name = status.in_reply_to_screen_name
-        data[:custom][:in_reply_to] = 
+        data[:custom][:in_reply_to] =
           'http://twitter.com/%s/status/%s' % [
             in_reply_name,
             status.in_reply_to_status_id_str]
