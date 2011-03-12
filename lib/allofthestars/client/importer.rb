@@ -19,6 +19,7 @@ module AllOfTheStars
             status.user.screen_name,
             status.id],
         :custom     => {
+          :id => status.id_str,
           :user => status.user.screen_name,
           :retweet_count => status.retweet_count.to_i
         },
