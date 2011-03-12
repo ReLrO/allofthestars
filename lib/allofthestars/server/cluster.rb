@@ -13,12 +13,12 @@ module AllOfTheStars
     before_create :scrub_attributes
 
     def search(query={}, options = {})
-      query['stars.cluster_id'] = id
+      query['cluster_id'] = id
       AllOfTheStars::Star.search(query, options)
     end
 
     def self.by_email(email)
-      search_riak('clusters.email' => email)
+      search_riak('email' => email)
     end
 
     def as_json(options = {})

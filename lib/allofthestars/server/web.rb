@@ -26,18 +26,21 @@ module AllOfTheStars
         query   = {}
         options = {}
         if q = params[:q]
-          query['stars.content'] = q
+          query['content'] = q
         end
         if start = params[:start]
           options["start"] = start.to_i
         end
         if type = params[:t]
-          query['stars.type'] = type
+          query['type'] = type
         end
         if (custom = params[:custom]).respond_to?(:keys)
           custom.each do |key, value|
-            query["stars.custom_#{key}"] = value
+            query["custom_#{key}"] = value
           end
+        end
+        if sort = params[:sort]
+          options['sort'] = sort
         end
         resp  = cluster.search(query, options)
         stars = Star.from_search(resp)
