@@ -8,6 +8,8 @@ module AllOfTheStars
     attribute :name,  String
     attribute :email, String
 
+    default_search_options.update "sort" => "name", "index" => "clusters"
+
     before_create :scrub_attributes
 
     def search(query={}, options = {})

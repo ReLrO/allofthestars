@@ -11,7 +11,7 @@ module AllOfTheStars
     attribute :custom,     Hash
     attribute :created_at, Time
 
-    default_search_options.update "sort" => "stars.created_at"
+    default_search_options.update "sort" => "created_at desc", "index" => "stars"
 
     def self.search(query = {}, options = {})
       search_riak(query, options)
