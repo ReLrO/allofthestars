@@ -1,3 +1,7 @@
+require 'bundler'
+
+Bundler.setup(:default, :server)
+
 require 'toystore'
 require 'adapter'
 require 'adapter/riak'

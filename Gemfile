@@ -15,8 +15,10 @@ group :server do
   gem "redis"
   gem "riak-client"
   gem "sinatra"
+  gem "stratocaster", :path => "vendor/stratocaster"
 end
 
 group :importers do
   gem "twitter"
+  gem "instagram"
 end

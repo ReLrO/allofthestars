@@ -1,3 +1,8 @@
+PATH
+  remote: ./vendor/stratocaster
+  specs:
+    stratocaster (0.0.1)
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -25,9 +30,14 @@ GEM
       faraday (~> 0.5.3)
     hashie (0.4.0)
     i18n (0.5.0)
+    instagram (0.3.2)
+      addressable
+      nibbler (>= 1.2.0)
+      yajl-ruby
     multi_json (0.0.5)
     multi_xml (0.2.0)
     multipart-post (1.1.0)
+    nibbler (1.2.1)
     rack (1.2.1)
     redis (2.1.1)
     riak-client (0.8.3)
@@ -62,9 +72,11 @@ DEPENDENCIES
   adapter-riak
   excon
   faraday
+  instagram
   redis
   riak-client
   sinatra
+  stratocaster!
   toystore
   twitter
   yajl-ruby

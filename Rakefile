@@ -24,6 +24,10 @@ namespace :import do
     import_tweet ENV['TWEET'].to_i
   end
 
+  task :instagram => :init do
+    #import_instagram
+  end
+
   # STARS_URL - String URL to AllOfTheStars instance.  Defaults to
   #             http://allofthestars.com
   # CLUSTER_ID - String Cluster ID
