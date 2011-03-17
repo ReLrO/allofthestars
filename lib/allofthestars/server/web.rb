@@ -74,7 +74,7 @@ module AllOfTheStars
           end
 
         star  = Star.create(data)
-        strat = Stratocaster.new(AllOfTheStars::Timelines::Type)
+        strat = AllOfTheStars.stratocaster
         strat.receive(star)
 
         response['Location'] = "/stars/#{star.id}"

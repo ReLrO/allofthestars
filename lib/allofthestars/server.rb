@@ -8,6 +8,8 @@ require 'adapter/riak'
 require 'redis'
 require 'riak/search'
 require 'stratocaster'
+require File.expand_path('../../../vendor/twitter-text-rb/lib/regex', __FILE__)
+require File.expand_path('../../../vendor/twitter-text-rb/lib/extractor', __FILE__)
 
 module AllOfTheStars
   class << self
@@ -25,11 +27,37 @@ module AllOfTheStars
 
   self.riak_client = Riak::Client.new(options)
 
+  def self.stratocaster
+    Stratocaster.new AllOfTheStars::Timelines::Type,
+      AllOfTheStars::Timelines::HashTag,
+      AllOfTheStars::Timelines::ScreenName
+  end
+
   module Timelines
     class Type < Stratocaster::Timeline
       adapter Stratocaster::Adapters::Redis.new(Redis.new, :prefix => "strat")
       key_format "type:%s" do |msg|
         msg.type
+      end
+    end
+
+    class HashTag < Stratocaster::Timeline
+      extend Twitter::Extractor
+
+      adapter Type.adapters.first
+      key_format "hashtag:%s" do |msg|
+        msg.type == "Twitter" &&
+          extract_hashtags(msg.content).first
+      end
+    end
+
+    class ScreenName < Stratocaster::Timeline
+      extend Twitter::Extractor
+
+      adapter Type.adapters.first
+      key_format "screenname:%s" do |msg|
+        msg.type == "Twitter" &&
+          extract_mentioned_screen_names(msg.content).first
       end
     end
   end
