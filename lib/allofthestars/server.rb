@@ -5,6 +5,7 @@ Bundler.setup(:default, :server)
 require 'toystore'
 require 'adapter'
 require 'adapter/riak'
+require 'redis'
 require 'riak/search'
 require 'stratocaster'
 
