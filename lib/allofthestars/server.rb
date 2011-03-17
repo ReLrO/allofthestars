@@ -6,6 +6,7 @@ require 'toystore'
 require 'adapter'
 require 'adapter/riak'
 require 'riak/search'
+require 'stratocaster'
 
 module AllOfTheStars
   class << self
@@ -22,6 +23,15 @@ module AllOfTheStars
   end
 
   self.riak_client = Riak::Client.new(options)
+
+  module Timelines
+    class Type < Stratocaster::Timeline
+      adapter Stratocaster::Adapters::Redis.new(Redis.new, :prefix => "strat")
+      key_format "type:%s" do |msg|
+        msg.type
+      end
+    end
+  end
 end
 
 %w(searchable cluster star).each do |lib|

@@ -72,7 +72,11 @@ module AllOfTheStars
             when /^\d+$/ then Time.at(time.to_i).utc
             else              Time.now.utc
           end
-        star = Star.create(data)
+
+        star  = Star.create(data)
+        strat = Stratocaster.new(AllOfTheStars::Timelines::Type)
+        strat.receive(star)
+
         response['Location'] = "/stars/#{star.id}"
         [201, star.to_json]
       else

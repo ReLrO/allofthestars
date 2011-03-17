@@ -15,6 +15,15 @@ class Stratocaster::Timeline
     @adapters ||= []
   end
 
+  # Public: Adds adapters to the stack of adapters for this Timeline.
+  #
+  # klass - One or more Adapter classes.
+  #
+  # Returns nothing.
+  def self.adapter(*classes)
+    adapters.push *classes
+  end
+
   # Public: Determines if this message is valid for this Timeline.  This
   # should be modified in subclasses of this Timeline.
   #
@@ -22,9 +31,19 @@ class Stratocaster::Timeline
   #
   # Returns true if the Message is acceptable, or false.
   def self.accept?(message)
-    true
+    if block = @accept_block || @key_block
+      !!block.call(message)
+    end
   end
 
+  # Public: Sets a block condition used to determine if a message is valid
+  # for this timeline.  Use the #key_format block if this is not set.
+  #
+  # Yields a Block with a single Message argument.
+  # Returns nothing.
+  def self.accept
+    @accept_block = Proc.new
+  end
 
   # Public: Delivers the Message to this Timeline's adapters.
   #
@@ -48,7 +67,42 @@ class Stratocaster::Timeline
   #
   # Returns a String key.
   def self.key_for(message)
-    "actor:#{message['actor']['id']}"
+    key @key_block.call(message)
+  end
+
+  # Public: Creates a unique Timeline key using the #key_format.
+  #
+  # *args - Array of arguments to use to format the #key_format String.
+  #
+  # Returns a String.
+  def self.key(*args)
+    args.flatten!
+    key_format % args
+  end
+
+  # Public: Either sets or gets the String format used to build the Timeline
+  # key.  The format should take the same number of arguments that the
+  # initializer of the custom Timeline class takes.
+  #
+  #     class MyTimeline < Stratocaster::Timeline
+  #       key_format "type:%s:%d" do |msg|
+  #         [msg['type'], msg['type_id']]
+  #       end
+  #     end
+  #
+  #     tl = Timeline.new('object', 5)
+  #     tl.key # => "type:object:5"
+  #
+  # str - Optional String that resets the key format.
+  #
+  # Returns the String format.
+  def self.key_format(str = nil)
+    if str
+      @key_format = str
+      @key_block  = Proc.new
+    end
+
+    @key_format
   end
 
   # Returns the String key of this Timeline instance.
@@ -62,8 +116,8 @@ class Stratocaster::Timeline
   #
   # message - The same Hash from Stratocaster#receive.
   # options - Optional Hash (reserved for future use).
-  def initialize(message, options = {})
-    @key = self.class.key_for(message)
+  def initialize(*args)
+    @key = self.class.key(*args)
     @default_adapter = self.class.adapters.first
   end
 
