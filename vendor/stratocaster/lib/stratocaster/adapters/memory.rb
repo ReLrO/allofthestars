@@ -1,7 +1,9 @@
 class Stratocaster::Adapters::Memory < Stratocaster::Adapter
-  def store(key, message)
-    id = message['id']
-    (@client[key] ||= []).unshift id.to_s
+  def store(keys, message)
+    id  = message['id'].to_s
+    keys.each do |key|
+      (@client[key] ||= []).unshift id
+    end
   end
 
   def page(key, num)

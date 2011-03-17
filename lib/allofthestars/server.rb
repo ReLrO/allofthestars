@@ -45,9 +45,12 @@ module AllOfTheStars
       extend Twitter::Extractor
 
       adapter Type.adapters.first
-      key_format "hashtag:%s" do |msg|
-        msg.type == "Twitter" &&
-          extract_hashtags(msg.content).first
+      key_format "hashtag:%s" do |msg, keys|
+        keys.push *extract_hashtags(msg.content)
+      end
+
+      accept do |msg|
+        msg.type == 'Twitter'
       end
     end
 
@@ -55,9 +58,12 @@ module AllOfTheStars
       extend Twitter::Extractor
 
       adapter Type.adapters.first
-      key_format "screenname:%s" do |msg|
-        msg.type == "Twitter" &&
-          extract_mentioned_screen_names(msg.content).first
+      key_format "screenname:%s" do |msg, keys|
+        keys.push *extract_mentioned_screen_names(msg.content)
+      end
+
+      accept do |msg|
+        msg.type == 'Twitter'
       end
     end
   end

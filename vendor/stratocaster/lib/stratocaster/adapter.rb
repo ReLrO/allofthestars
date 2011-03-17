@@ -37,11 +37,11 @@ class Stratocaster::Adapter
   # Public: Stores the given Message ID in the Timeline identified by
   # the given key.
   #
-  # key     - The String key of the Timeline.
+  # keys    - An Array of String keys of Timelines.
   # message - The same Hash from Stratocaster#receive.
   #
   # Returns nothing.
-  def store(key, message)
+  def store(keys, message)
     raise NotImplementedError
   end
 

@@ -32,6 +32,8 @@ class Stratocaster
     keys = @timelines.map do |timeline|
       timeline.deliver(message) if timeline.accept?(message)
     end
+
+    keys.flatten!
     keys.compact!
     keys
   end

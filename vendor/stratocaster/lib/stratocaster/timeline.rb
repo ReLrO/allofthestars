@@ -31,9 +31,9 @@ class Stratocaster::Timeline
   #
   # Returns true if the Message is acceptable, or false.
   def self.accept?(message)
-    if block = @accept_block || @key_block
-      !!block.call(message)
-    end
+    block = @accept_block || (@key_block.arity == 1 && @key_block)
+    value = block && block.call(message)
+    value.respond_to?(:size) ? value.size > 0 : !!value
   end
 
   # Public: Sets a block condition used to determine if a message is valid
@@ -49,13 +49,13 @@ class Stratocaster::Timeline
   #
   # message - The same Hash from Stratocaster#receive.
   #
-  # Returns the String key of the Timeline.
+  # Returns an Array of String keys of Timelines.
   def self.deliver(message)
-    key = key_for(message)
+    keys = keys_for(message)
     adapters.each do |adapter|
-      adapter.store(key, message)
+      adapter.store(keys, message)
     end
-    key
+    keys
   end
 
   # Public: Creates a unique Timeline key.  The key is used to identify
@@ -65,9 +65,15 @@ class Stratocaster::Timeline
   #
   # message - The same Hash from Stratocaster#receive.
   #
-  # Returns a String key.
-  def self.key_for(message)
-    key @key_block.call(message)
+  # Returns an Array of String keys.
+  def self.keys_for(message)
+    if @key_block.arity == 2
+      keys = []
+      @key_block.call(message, keys)
+      keys.map { |k| key *k }
+    else
+      [key *@key_block.call(message)]
+    end
   end
 
   # Public: Creates a unique Timeline key using the #key_format.

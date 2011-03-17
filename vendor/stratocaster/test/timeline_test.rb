@@ -4,15 +4,12 @@ class TimelineTest < Test::Unit::TestCase
   class CommentTimeline < Stratocaster::Timeline
     adapter Stratocaster::Adapters::Memory.new({})
 
-    key_format "comment:%d:%d" do |message|
-      # turns nils to zero
-      [message['payload']['comment'].to_i,
-        message['actor']['id']]
-    end
-
-    # specifically override the key format block
     accept do |message|
       message['payload']['comment']
+    end
+
+    key_format "comment:%d:%d" do |message, keys|
+      keys << [message['payload']['comment'], message['actor']['id']]
     end
   end
 
@@ -26,7 +23,7 @@ class TimelineTest < Test::Unit::TestCase
   end
 
   def test_deliver_returns_key
-    assert_equal 'comment:5:321', CommentTimeline.deliver(@comment)
+    assert_equal %w(comment:5:321), CommentTimeline.deliver(@comment)
   end
 
   def test_checks_if_timeline_accepts_message

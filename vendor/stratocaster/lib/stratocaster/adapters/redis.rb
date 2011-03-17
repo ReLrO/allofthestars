@@ -1,11 +1,13 @@
 class Stratocaster::Adapters::Redis < Stratocaster::Adapter
-  def store(key, message)
-    id        = message['id']
-    redis_key = key_for(key)
+  def store(keys, message)
+    id = message['id'].to_s
     @client.pipelined do
-      @client.lpush(redis_key, id)
-      if (max = @options[:max]) > 0
-        @client.ltrim(redis_key, 0, max-1)
+      keys.each do |key|
+        redis_key = key_for(key)
+        @client.lpush(redis_key, id)
+        if (max = @options[:max]) > 0
+          @client.ltrim(redis_key, 0, max-1)
+        end
       end
     end
   end
