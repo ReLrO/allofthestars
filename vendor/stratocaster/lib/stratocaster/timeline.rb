@@ -67,12 +67,12 @@ class Stratocaster::Timeline
   #
   # Returns an Array of String keys.
   def self.keys_for(message)
+    keys = []
     if @key_block.arity == 2
-      keys = []
       @key_block.call(message, keys)
       keys.map { |k| key *k }
     else
-      [key *@key_block.call(message)]
+      keys << key(*@key_block.call(message))
     end
   end
 
