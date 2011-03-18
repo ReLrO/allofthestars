@@ -87,6 +87,7 @@ module AllOfTheStars
           'created_at' => Time.now.utc,
           'type'       => "Campfire",
           'source_url' => params[:url],
+          'content'    => params[:message],
           'custom'     => {
             'id'     => params[:message_id],
             'author' => params[:author],
