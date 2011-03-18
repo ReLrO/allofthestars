@@ -93,10 +93,9 @@ module AllOfTheStars
             'author' => params[:author],
             'room'   => params[:room]
           }
-        "var message_location = " + response['Location'].inspect
-      else
-        "var message_location = ''"
       end
+      response['Content-Type'] = 'text/javascript'
+      "var message_location = " + response['Location'].to_s.inspect
     end
 
     def header_to_string(header)
