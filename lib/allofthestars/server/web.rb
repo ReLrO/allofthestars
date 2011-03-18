@@ -81,18 +81,18 @@ module AllOfTheStars
             data['cluster_id'], data['type'], id]
           start = Time.now
           star = Star.get(data['id'])
-          response['X-Runtime'] += "#{(Time.now-start).round};"
+          response['X-Runtime'] += "#{Time.now-start};"
         end
 
         if !star
           start = Time.now
           star  = Star.create(data)
-          response['X-Runtime'] += "#{(Time.now-start).round};"
+          response['X-Runtime'] += "#{Time.now-start};"
 
           start = Time.now
           strat = AllOfTheStars.stratocaster
           timelines = strat.receive(star)
-          response['X-Runtime'] += "#{(Time.now-start).round}; "
+          response['X-Runtime'] += "#{Time.now-start}; "
 
           response['X-Timelines'] = timelines.join(', ')
           response['Location'] = "/stars/#{star.id}"
