@@ -29,6 +29,7 @@ module AllOfTheStars
 
   def self.stratocaster
     Stratocaster.new AllOfTheStars::Timelines::Type,
+      AllOfTheStars::Timelines::Cluster,
       AllOfTheStars::Timelines::HashTag,
       AllOfTheStars::Timelines::ScreenName
   end
