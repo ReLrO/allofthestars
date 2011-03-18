@@ -37,8 +37,16 @@ module AllOfTheStars
     class Type < Stratocaster::Timeline
       adapter Stratocaster::Adapters::Redis.new(Redis.new, :prefix => "strat")
 
-      key_format "type:%s" do |msg|
-        msg.type
+      key_format "%s:type:%s" do |msg|
+        [msg.cluster_id, msg.type]
+      end
+    end
+
+    class Cluster < Stratocaster::Timeline
+      adapter Type.adapters.first
+
+      key_format "%s" do |msg|
+        msg.cluster_id
       end
     end
 
@@ -47,8 +55,10 @@ module AllOfTheStars
 
       adapter Type.adapters.first
 
-      key_format "hashtag:%s" do |msg, keys|
-        keys.push *extract_hashtags(msg.content)
+      key_format "%s:hashtag:%s" do |msg, keys|
+        extract_hashtags(msg.content).each do |hashtag|
+          keys << [msg.cluster_id, hashtag]
+        end
       end
 
       accept do |msg|
@@ -60,8 +70,10 @@ module AllOfTheStars
       extend Twitter::Extractor
 
       adapter Type.adapters.first
-      key_format "screenname:%s" do |msg, keys|
-        keys.push *extract_mentioned_screen_names(msg.content)
+      key_format "%s:screenname:%s" do |msg, keys|
+        extract_mentioned_screen_names(msg.content).each do |name|
+          keys << [msg.cluster_id, name]
+        end
       end
 
       accept do |msg|
