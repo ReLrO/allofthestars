@@ -94,8 +94,8 @@ module AllOfTheStars
             'room'   => params[:room]
           }
       end
-      response['Content-Type'] = 'text/javascript'
-      "var message_location = " + response['Location'].to_s.inspect
+      response['Content-Type'] = 'application/json'
+      {:message_location => response['Location']}.to_json
     end
 
     def header_to_string(header)
