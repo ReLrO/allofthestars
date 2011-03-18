@@ -80,7 +80,7 @@ module AllOfTheStars
       end
     end
 
-    get "/clusters/:id/stars" do
+    get "/clusters/:id/campfire" do
       if cluster = Cluster.get(params[:id])
         save_star \
           'cluster_id' => cluster.id,
@@ -92,8 +92,9 @@ module AllOfTheStars
             'author' => params[:author],
             'room'   => params[:room]
           }
+        "var message_location = " + response['Location'].inspect
       else
-        not_found
+        "var message_location = ''"
       end
     end
 
