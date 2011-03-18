@@ -36,6 +36,7 @@ module AllOfTheStars
   module Timelines
     class Type < Stratocaster::Timeline
       adapter Stratocaster::Adapters::Redis.new(Redis.new, :prefix => "strat")
+
       key_format "type:%s" do |msg|
         msg.type
       end
@@ -45,6 +46,7 @@ module AllOfTheStars
       extend Twitter::Extractor
 
       adapter Type.adapters.first
+
       key_format "hashtag:%s" do |msg, keys|
         keys.push *extract_hashtags(msg.content)
       end

@@ -21,7 +21,17 @@ end
 namespace :import do
   desc "Import a single Tweet.  Needs CLUSTER_ID= and TWEET={status-id}"
   task :tweet => :init do
-    import_tweet ENV['TWEET'].to_i
+    ENV['TWEET'].to_s.split(',').each do |tweet|
+      tweet.strip!
+      import_tweet tweet.to_i
+    end
+  end
+
+  task :twitter_favorites => :init do
+    ENV['USER'].to_s.split(',').each do |user|
+      user.strip!
+      import_twitter_favorites user
+    end
   end
 
   task :instagram => :init do
@@ -37,6 +47,7 @@ namespace :import do
     require 'bundler'
     Bundler.setup :default, :client, :importers
     $:.unshift File.expand_path("../lib", __FILE__)
+    require 'redis'
     require 'allofthestars/client/importer'
 
     if url = ENV['STARS_URL']
@@ -44,6 +55,7 @@ namespace :import do
     end
 
     extend AllOfTheStars::Importer
+    self.redis      = Redis.new
     self.cluster_id = ENV['CLUSTER_ID']
     debug! if ENV['DEBUG']
   end

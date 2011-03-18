@@ -2,6 +2,7 @@ source "http://rubygems.org"
 
 gem 'excon'
 gem 'yajl-ruby'
+gem "redis"
 
 group :client do
   gem 'faraday'
@@ -12,7 +13,6 @@ group :server do
   gem "adapter"
   gem "adapter-riak"
   gem "adapter-redis"
-  gem "redis"
   gem "riak-client"
   gem "sinatra"
   gem "stratocaster", :path => "vendor/stratocaster"
