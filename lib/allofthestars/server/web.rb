@@ -1,5 +1,6 @@
 require 'sinatra/base'
 require 'allofthestars/server'
+require 'digest/sha1'
 
 module AllOfTheStars
   class Web < Sinatra::Base
@@ -73,12 +74,25 @@ module AllOfTheStars
             else              Time.now.utc
           end
 
-        star  = Star.create(data)
-        strat = AllOfTheStars.stratocaster
-        strat.receive(star)
+        star = nil
+        if id = data['custom']['id']
+          data['id'] = Digest::SHA1.hexdigest "%s:%s:%s" % [
+            data['cluster_id'], data['type'], id]
+          star = Star.get(data['id'])
+        end
 
-        response['Location'] = "/stars/#{star.id}"
-        [201, star.to_json]
+        if !star
+          star  = Star.create(data)
+          strat = AllOfTheStars.stratocaster
+          timelines = strat.receive(star)
+
+          response['X-Timelines'] = timelines.join(', ')
+          response['Location'] = "/stars/#{star.id}"
+          [201, star.to_json]
+        else
+          response['Location'] = "/stars/#{star.id}"
+          [302, star.to_json]
+        end
       else
         not_found
       end
