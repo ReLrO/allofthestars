@@ -74,33 +74,24 @@ module AllOfTheStars
             else              Time.now.utc
           end
 
-        star = nil
-        response['X-Runtime'] = ''
-        if id = data['custom']['id']
-          data['id'] = Digest::SHA1.hexdigest "%s:%s:%s" % [
-            data['cluster_id'], data['type'], id]
-          start = Time.now
-          star = Star.get(data['id'])
-          response['X-Runtime'] += "#{Time.now-start};"
-        end
+        save_star(data)
+      else
+        not_found
+      end
+    end
 
-        if !star
-          start = Time.now
-          star  = Star.create(data)
-          response['X-Runtime'] += "#{Time.now-start};"
-
-          start = Time.now
-          strat = AllOfTheStars.stratocaster
-          timelines = strat.receive(star)
-          response['X-Runtime'] += "#{Time.now-start}; "
-
-          response['X-Timelines'] = timelines.join(', ')
-          response['Location'] = "/stars/#{star.id}"
-          [201, star.to_json]
-        else
-          response['Location'] = "/stars/#{star.id}"
-          [302, star.to_json]
-        end
+    get "/clusters/:id/stars" do
+      if cluster = Cluster.get(params[:id])
+        save_star \
+          'cluster_id' => cluster.id,
+          'created_at' => Time.now.utc,
+          'type'       => "Campfire",
+          'source_url' => params[:url],
+          'custom'     => {
+            'id'     => params[:message_id],
+            'author' => params[:author],
+            'room'   => params[:room]
+          }
       else
         not_found
       end
@@ -113,6 +104,36 @@ module AllOfTheStars
       header.inject([]) do |arr, (key, value)|
         arr << "#{key}=#{value.inspect}"
       end.join('; ')
+    end
+
+    def save_star(data)
+      star = nil
+      response['X-Runtime'] = ''
+      if id = data['custom']['id']
+        data['id'] = Digest::SHA1.hexdigest "%s:%s:%s" % [
+          data['cluster_id'], data['type'], id]
+        start = Time.now
+        star = Star.get(data['id'])
+        response['X-Runtime'] += "#{Time.now-start};"
+      end
+
+      if !star
+        start = Time.now
+        star  = Star.create(data)
+        response['X-Runtime'] += "#{Time.now-start};"
+
+        start = Time.now
+        strat = AllOfTheStars.stratocaster
+        timelines = strat.receive(star)
+        response['X-Runtime'] += "#{Time.now-start}; "
+
+        response['X-Timelines'] = timelines.join(', ')
+        response['Location'] = "/stars/#{star.id}"
+        [201, star.to_json]
+      else
+        response['Location'] = "/stars/#{star.id}"
+        [302, star.to_json]
+      end
     end
   end
 end
