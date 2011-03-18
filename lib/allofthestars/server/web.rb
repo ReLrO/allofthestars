@@ -75,16 +75,24 @@ module AllOfTheStars
           end
 
         star = nil
+        response['X-Runtime'] = ''
         if id = data['custom']['id']
           data['id'] = Digest::SHA1.hexdigest "%s:%s:%s" % [
             data['cluster_id'], data['type'], id]
+          start = Time.now
           star = Star.get(data['id'])
+          response['X-Runtime'] += "#{(Time.now-start).round};"
         end
 
         if !star
+          start = Time.now
           star  = Star.create(data)
+          response['X-Runtime'] += "#{(Time.now-start).round};"
+
+          start = Time.now
           strat = AllOfTheStars.stratocaster
           timelines = strat.receive(star)
+          response['X-Runtime'] += "#{(Time.now-start).round}; "
 
           response['X-Timelines'] = timelines.join(', ')
           response['Location'] = "/stars/#{star.id}"
