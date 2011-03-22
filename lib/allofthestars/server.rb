@@ -13,7 +13,7 @@ require File.expand_path('../../../vendor/twitter-text-rb/lib/extractor', __FILE
 
 module AllOfTheStars
   class << self
-    attr_accessor :riak_client
+    attr_accessor :riak_client, :redis_client, :stratocaster
   end
 
   options = {:http_backend => :Excon}
@@ -25,18 +25,13 @@ module AllOfTheStars
     end
   end
 
-  self.riak_client = Riak::Client.new(options)
-
-  def self.stratocaster
-    Stratocaster.new AllOfTheStars::Timelines::Type,
-      AllOfTheStars::Timelines::Cluster,
-      AllOfTheStars::Timelines::HashTag,
-      AllOfTheStars::Timelines::ScreenName
-  end
+  self.riak_client  = Riak::Client.new(options)
+  self.redis_client = Redis.new(:thread_safe => true)
 
   module Timelines
     class Type < Stratocaster::Timeline
-      adapter Stratocaster::Adapters::Redis.new(Redis.new, :prefix => "strat")
+      adapter Stratocaster::Adapters::Redis.new(AllOfTheStars.redis_client,
+                                                :prefix => 'strat')
 
       key_format "%s:type:%s" do |msg|
         [msg.cluster_id, msg.type]
@@ -53,7 +48,6 @@ module AllOfTheStars
 
     class HashTag < Stratocaster::Timeline
       extend Twitter::Extractor
-
       adapter Type.adapters.first
 
       key_format "%s:hashtag:%s" do |msg, keys|
@@ -69,8 +63,8 @@ module AllOfTheStars
 
     class ScreenName < Stratocaster::Timeline
       extend Twitter::Extractor
-
       adapter Type.adapters.first
+
       key_format "%s:screenname:%s" do |msg, keys|
         extract_mentioned_screen_names(msg.content).each do |name|
           keys << [msg.cluster_id, name]
@@ -82,6 +76,11 @@ module AllOfTheStars
       end
     end
   end
+
+  self.stratocaster = Stratocaster.new \
+    AllOfTheStars::Timelines::Type,
+    AllOfTheStars::Timelines::HashTag,
+    AllOfTheStars::Timelines::ScreenName
 end
 
 %w(searchable cluster star).each do |lib|

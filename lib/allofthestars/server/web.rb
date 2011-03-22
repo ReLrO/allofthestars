@@ -126,6 +126,10 @@ module AllOfTheStars
         start = Time.now
         strat = AllOfTheStars.stratocaster
         timelines = strat.receive(star)
+        timelines.each do |tl|
+          AllOfTheStars.redis_client.publish tl, star.id
+        end
+
         response['X-Runtime'] += "#{Time.now-start}; "
 
         response['X-Timelines'] = timelines.join(', ')
