@@ -13,6 +13,15 @@ module AllOfTheStars
 
     default_search_options.update "sort" => "created_at desc", "index" => "stars"
 
+    def self.publish(data)
+      star      = create(data)
+      timelines = AllOfTheStars.stratocaster.receive(star)
+      timelines.each do |tl|
+        AllOfTheStars.redis_client.publish tl, star.id
+      end
+      [star, *timelines]
+    end
+
     def self.search(query = {}, options = {})
       search_riak(query, options)
     end

@@ -120,15 +120,7 @@ module AllOfTheStars
 
       if !star
         start = Time.now
-        star  = Star.create(data)
-        response['X-Runtime'] += "#{Time.now-start};"
-
-        start = Time.now
-        strat = AllOfTheStars.stratocaster
-        timelines = strat.receive(star)
-        timelines.each do |tl|
-          AllOfTheStars.redis_client.publish tl, star.id
-        end
+        star, *timelines = Star.publish(data)
 
         response['X-Runtime'] += "#{Time.now-start}; "
 
