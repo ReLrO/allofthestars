@@ -1,21 +1,21 @@
-# A Timeline is responsible for deciding which Messages it can receive,
+# A Feed is responsible for deciding which Messages it can receive,
 # storing the Message IDs in the Adapters, and retrieving them.
-# Timelines should be subclassed to define custom key names and
+# Feeds should be subclassed to define custom key names and
 # acceptance conditions.
-class Stratocaster::Timeline
+class Stratocaster::Feed
   class << self
     attr_writer :adapters
   end
 
   self.adapters = []
 
-  # Public: A Timeline can store Messages in multiple Adapters.  Each
+  # Public: A Feed can store Messages in multiple Adapters.  Each
   # Adapter is for a specific data store (Redis, MySQL, etc).
   def self.adapters
     @adapters ||= []
   end
 
-  # Public: Adds adapters to the stack of adapters for this Timeline.
+  # Public: Adds adapters to the stack of adapters for this Feed.
   #
   # klass - One or more Adapter classes.
   #
@@ -24,8 +24,8 @@ class Stratocaster::Timeline
     adapters.push *classes
   end
 
-  # Public: Determines if this message is valid for this Timeline.  This
-  # should be modified in subclasses of this Timeline.
+  # Public: Determines if this message is valid for this Feed.  This
+  # should be modified in subclasses of this Feed.
   #
   # message - The same Hash from Stratocaster#receive.
   #
@@ -37,7 +37,7 @@ class Stratocaster::Timeline
   end
 
   # Public: Sets a block condition used to determine if a message is valid
-  # for this timeline.  Use the #key_format block if this is not set.
+  # for this feed.  Use the #key_format block if this is not set.
   #
   # Yields a Block with a single Message argument.
   # Returns nothing.
@@ -45,11 +45,11 @@ class Stratocaster::Timeline
     @accept_block = Proc.new
   end
 
-  # Public: Delivers the Message to this Timeline's adapters.
+  # Public: Delivers the Message to this Feed's adapters.
   #
   # message - The same Hash from Stratocaster#receive.
   #
-  # Returns an Array of String keys of Timelines.
+  # Returns an Array of String keys of Feeds.
   def self.deliver(message)
     keys = keys_for(message)
     adapters.each do |adapter|
@@ -58,10 +58,10 @@ class Stratocaster::Timeline
     keys
   end
 
-  # Public: Creates a unique Timeline key.  The key is used to identify
+  # Public: Creates a unique Feed key.  The key is used to identify
   # where the Message is added in the Adapter.  In Redis, it'd be used
   # to build the key of a Redis List.  The generated key of the same
-  # Message in two Timelines are probably going to be different.
+  # Message in two Feeds are probably going to be different.
   #
   # message - The same Hash from Stratocaster#receive.
   #
@@ -76,7 +76,7 @@ class Stratocaster::Timeline
     end
   end
 
-  # Public: Creates a unique Timeline key using the #key_format.
+  # Public: Creates a unique Feed key using the #key_format.
   #
   # *args - Array of arguments to use to format the #key_format String.
   #
@@ -86,17 +86,17 @@ class Stratocaster::Timeline
     key_format % args
   end
 
-  # Public: Either sets or gets the String format used to build the Timeline
+  # Public: Either sets or gets the String format used to build the Feed
   # key.  The format should take the same number of arguments that the
-  # initializer of the custom Timeline class takes.
+  # initializer of the custom Feed class takes.
   #
-  #     class MyTimeline < Stratocaster::Timeline
+  #     class MyFeed < Stratocaster::Feed
   #       key_format "type:%s:%d" do |msg|
   #         [msg['type'], msg['type_id']]
   #       end
   #     end
   #
-  #     tl = Timeline.new('object', 5)
+  #     tl = Feed.new('object', 5)
   #     tl.key # => "type:object:5"
   #
   # str - Optional String that resets the key format.
@@ -111,13 +111,13 @@ class Stratocaster::Timeline
     @key_format
   end
 
-  # Returns the String key of this Timeline instance.
+  # Returns the String key of this Feed instance.
   attr_reader :key
 
-  # Returns the Adapter used for queries on this Timeline instance.
+  # Returns the Adapter used for queries on this Feed instance.
   attr_reader :default_adapter
 
-  # Initializes a new Timeline instance with this Message for querying
+  # Initializes a new Feed instance with this Message for querying
   # purposes.
   #
   # message - The same Hash from Stratocaster#receive.
@@ -136,14 +136,14 @@ class Stratocaster::Timeline
     default_adapter.page(@key, num)
   end
 
-  # Public: Counts the number of Messages in this Timeline.
+  # Public: Counts the number of Messages in this Feed.
   #
   # Returns a Fixnum size.
   def count
     default_adapter.count(@key)
   end
 
-  # Public: Clears the Messages in this Timeline.
+  # Public: Clears the Messages in this Feed.
   #
   # Returns nothing.
   def clear

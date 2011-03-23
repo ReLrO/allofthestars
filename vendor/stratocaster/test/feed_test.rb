@@ -1,7 +1,7 @@
 require File.expand_path('../helper', __FILE__)
 
-class TimelineTest < Test::Unit::TestCase
-  class CommentTimeline < Stratocaster::Timeline
+class FeedTest < Test::Unit::TestCase
+  class CommentFeed < Stratocaster::Feed
     adapter Stratocaster::Adapters::Memory.new({})
 
     accept do |message|
@@ -17,30 +17,30 @@ class TimelineTest < Test::Unit::TestCase
     @message = {'id' => 123, 'actor' => {'id' => 321}, 'payload' => {}}
     @comment = @message.merge('payload' => {'comment' => 5})
 
-    CommentTimeline.adapters.first.client.clear
+    CommentFeed.adapters.first.client.clear
 
-    CommentTimeline.deliver(@comment)
+    CommentFeed.deliver(@comment)
   end
 
   def test_deliver_returns_key
-    assert_equal %w(comment:5:321), CommentTimeline.deliver(@comment)
+    assert_equal %w(comment:5:321), CommentFeed.deliver(@comment)
   end
 
-  def test_checks_if_timeline_accepts_message
-    assert !CommentTimeline.accept?(@message)
+  def test_checks_if_feed_accepts_message
+    assert !CommentFeed.accept?(@message)
   end
 
   def test_queries_adapter_for_message_ids
-    assert_equal %w(123), CommentTimeline.new(5, 321).page(1)
-    assert_equal %w(123), CommentTimeline.adapters.first.page('comment:5:321', 1)
+    assert_equal %w(123), CommentFeed.new(5, 321).page(1)
+    assert_equal %w(123), CommentFeed.adapters.first.page('comment:5:321', 1)
   end
 
   def test_counts_messages_in_adapter
-    assert_equal 1, CommentTimeline.new(5, 321).count
+    assert_equal 1, CommentFeed.new(5, 321).count
   end
 
   def test_uses_first_adapter_by_default
     assert_equal "Stratocaster::Adapters::Memory",
-      CommentTimeline.new(5, 321).default_adapter.class.name
+      CommentFeed.new(5, 321).default_adapter.class.name
   end
 end

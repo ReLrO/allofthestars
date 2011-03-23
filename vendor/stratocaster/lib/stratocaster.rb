@@ -1,17 +1,17 @@
-# Stratocaster is a system for storing and retrieving Messages in Timelines.
-# A Timeline is a secondary index of Messages.  Complex SQL queries are
-# replaced in favor of multiple/overlapping Timelines to filter Messages.
+# Stratocaster is a system for storing and retrieving Messages in Feeds.
+# A Feed is a secondary index of Messages.  Complex SQL queries are
+# replaced in favor of multiple/overlapping Feeds to filter Messages.
 # Abstract adapters are used to persist the data.
 class Stratocaster
   VERSION = "0.0.1"
 
-  # Public: Each Stratocaster instance tracks which possible Timeline classes
+  # Public: Each Stratocaster instance tracks which possible Feed classes
   # it can deliver Messages to.
-  attr_reader :timelines
+  attr_reader :feeds
 
-  def initialize(*timelines)
-    timelines.flatten!
-    @timelines = timelines
+  def initialize(*feeds)
+    feeds.flatten!
+    @feeds = feeds
   end
 
   # Public: Processes a received Message.  Since Stratocaster only stores the
@@ -26,11 +26,11 @@ class Stratocaster
   #                   user that created the message.
   #           payload - A Hash holding custom values for the Message.
   #
-  # Returns an Array of String keys of Timelines that this message was
+  # Returns an Array of String keys of Feeds that this message was
   # delivered to.
   def receive(message)
-    keys = @timelines.map do |timeline|
-      timeline.deliver(message) if timeline.accept?(message)
+    keys = @feeds.map do |feed|
+      feed.deliver(message) if feed.accept?(message)
     end
 
     keys.flatten!
@@ -41,4 +41,4 @@ end
 
 # Load up the rest of Stratocaster.
 require 'stratocaster/adapter'
-require 'stratocaster/timeline'
+require 'stratocaster/feed'

@@ -2,10 +2,10 @@
 # and retrieving them.
 class Stratocaster::Adapter
   class << self
-    # A global default page size for Timelines.
+    # A global default page size for Feeds.
     attr_accessor :per_page,
 
-    # A global default total size for Timelines.  Not always used by
+    # A global default total size for Feeds.  Not always used by
     # Adapters.
                   :max
   end
@@ -22,7 +22,7 @@ class Stratocaster::Adapter
   # Returns a reference to the raw DB driver.
   attr_reader :client
 
-  # Returns a Hash of options to customize the Timeline behavior.
+  # Returns a Hash of options to customize the Feed behavior.
   # per_page - A Fixnum specifying the page size for individual query
   #            results.
   attr_reader :options
@@ -34,10 +34,10 @@ class Stratocaster::Adapter
     @options[:max]      ||= self.class.max
   end
 
-  # Public: Stores the given Message ID in the Timeline identified by
+  # Public: Stores the given Message ID in the Feed identified by
   # the given key.
   #
-  # keys    - An Array of String keys of Timelines.
+  # keys    - An Array of String keys of Feed.
   # message - The same Hash from Stratocaster#receive.
   #
   # Returns nothing.
@@ -45,9 +45,9 @@ class Stratocaster::Adapter
     raise NotImplementedError
   end
 
-  # Public: Queries the Timeline for a page of Message IDs.
+  # Public: Queries the Feed for a page of Message IDs.
   #
-  # key - The String key of the Timeline.
+  # key - The String key of the Feed.
   # num - The Fixnum page number.
   #
   # Returns an Array of Message IDs.
@@ -55,18 +55,18 @@ class Stratocaster::Adapter
     raise NotImplementedError
   end
 
-  # Public: Counts the Messages stored in a Timeline.
+  # Public: Counts the Messages stored in a Feed.
   #
-  # key - The String key of the Timeline.
+  # key - The String key of the Feed.
   #
   # Returns a Fixnum size.
   def count(key)
     raise NotImplementedError
   end
 
-  # Public: Clears all Messages stored in a Timeline.
+  # Public: Clears all Messages stored in a Feed.
   #
-  # key - The String key of the Timeline.
+  # key - The String key of the Feed.
   #
   # Returns nothing.
   def clear(key)

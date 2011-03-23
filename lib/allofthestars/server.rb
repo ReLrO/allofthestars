@@ -28,8 +28,8 @@ module AllOfTheStars
   self.riak_client  = Riak::Client.new(options)
   self.redis_client = Redis.new(:thread_safe => true)
 
-  module Timelines
-    class Type < Stratocaster::Timeline
+  module Feeds
+    class Type < Stratocaster::Feed
       adapter Stratocaster::Adapters::Redis.new(AllOfTheStars.redis_client,
                                                 :prefix => 'strat')
 
@@ -38,7 +38,7 @@ module AllOfTheStars
       end
     end
 
-    class Cluster < Stratocaster::Timeline
+    class Cluster < Stratocaster::Feed
       adapter Type.adapters.first
 
       key_format "%s" do |msg|
@@ -46,7 +46,7 @@ module AllOfTheStars
       end
     end
 
-    class HashTag < Stratocaster::Timeline
+    class HashTag < Stratocaster::Feed
       extend Twitter::Extractor
       adapter Type.adapters.first
 
@@ -61,7 +61,7 @@ module AllOfTheStars
       end
     end
 
-    class ScreenName < Stratocaster::Timeline
+    class ScreenName < Stratocaster::Feed
       extend Twitter::Extractor
       adapter Type.adapters.first
 
@@ -78,9 +78,9 @@ module AllOfTheStars
   end
 
   self.stratocaster = Stratocaster.new \
-    AllOfTheStars::Timelines::Type,
-    AllOfTheStars::Timelines::HashTag,
-    AllOfTheStars::Timelines::ScreenName
+    AllOfTheStars::Feeds::Type,
+    AllOfTheStars::Feeds::HashTag,
+    AllOfTheStars::Feeds::ScreenName
 end
 
 %w(searchable cluster star).each do |lib|

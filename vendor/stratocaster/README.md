@@ -3,9 +3,9 @@
 ## Overview
 
 Stratocaster is a system for storing and retrieving messages on
-timelines. A message can contain any arbitrary payload. A timeline is a
+feeds. A message can contain any arbitrary payload. A feed is a
 filtered stream of messages.  Complex querying is replaced in favor of
-creating multiple timelines as filters for the messages.  Stratocaster
+creating multiple feeds as filters for the messages.  Stratocaster
 uses abstract adapters to persist the data, instead of being bound to
 any one type of data store.
 
@@ -17,7 +17,7 @@ schemaless objects][friendfeed].
 ### Message
 
 A Message is a schema-less entity intended to be delivered to one or
-more timelines.  Stratocaster will take any ActiveModel compatible model
+more feeds.  Stratocaster will take any ActiveModel compatible model
 (ActiveRecord, [ToyStore][toys], etc) and convert it to a Hash with
 these required keys:
 
@@ -39,27 +39,27 @@ A Message would look something like this as a Ruby hash:
 
 [toys]: https://github.com/newtoy/toystore
 
-### Timeline
+### Feed
 
-A Timeline is a pre-computed view of messages that meet a certain
-criteria.  A Stratocaster instance knows which possible timelines a
+A Feed is a pre-computed view of messages that meet a certain
+criteria.  A Stratocaster instance knows which possible feeds a
 message can be delivered to.  As each message comes in, Stratocaster
-finds the timelines that are applicable to the message.
+finds the feeds that are applicable to the message.
 
-Each timeline is responsible for persisting the Message by its Id and
+Each feed is responsible for persisting the Message by its Id and
 retrieving the Ids in pages.  These Ids are then passed to the data
 store that Messages are persisted.
 
 ## Ruby API
 
-First, you need to define the Timelines:
+First, you need to define the Feeds:
 
-    class RepositoryTimeline < Stratocaster::Timeline
-      # Timelines can use multiple adapters
+    class RepositoryFeed < Stratocaster::Feed
+      # Feeds can use multiple adapters
       adapter :redis, :host => '...', :default => true
       adapter :mysql, ...
 
-      # This method is used to determine if this Timeline should receive
+      # This method is used to determine if this Feed should receive
       # the incoming Message.
       def self.accept?(message)
         !message.repository
@@ -78,11 +78,11 @@ First, you need to define the Timelines:
 
 Create an instance of Stratocaster to start processing messages.
 
-    strat = Stratocaster.new PublicTimeline, RepositoryTimeline, ...
+    strat = Stratocaster.new PublicFeed, RepositoryFeed, ...
 
     # Add or remove them on the instance.
-    strat.timelines << ActorTimeline
-    strat.timelines.unshift RecipientTimeline
+    strat.feeds << ActorFeed
+    strat.feeds.unshift RecipientFeed
 
 Now, you can start processing messages!
 
@@ -90,21 +90,21 @@ Now, you can start processing messages!
 
 Internally, this calls:
 
-    strat.timelines.each do |timeline|
-      timeline.deliver(message) if timeline.accept?(message)
+    strat.feeds.each do |feed|
+      feed.deliver(message) if feed.accept?(message)
     end
 
-To query a timeline, create an instance of the Timeline.
+To query a feed, create an instance of the Feed.
 
     repo = Repository.find(1)
-    redis_timeline = RepositoryTimeline.new(repo.id, :per_page => 50)
+    redis_feed = RepositoryFeed.new(repo.id, :per_page => 50)
 
     # Get the first page of the most recent messages.
-    redis_timeline.page(1) # uses the default adapter
+    redis_feed.page(1) # uses the default adapter
     # => [12, 26, 230]
 
     # specify the adapter
-    mysql_timeline = RepositoryTimeline.new(repo.id, :adapter => :mysql)
+    mysql_feed = RepositoryFeed.new(repo.id, :adapter => :mysql)
 
-    # or change it on an existing timeline
-    redis_timeline.adapter = :mysql
+    # or change it on an existing feed
+    redis_feed.adapter = :mysql

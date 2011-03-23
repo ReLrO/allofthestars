@@ -15,11 +15,11 @@ module AllOfTheStars
 
     def self.publish(data)
       star      = create(data)
-      timelines = AllOfTheStars.stratocaster.receive(star)
-      timelines.each do |tl|
+      feeds = AllOfTheStars.stratocaster.receive(star)
+      feeds.each do |tl|
         AllOfTheStars.redis_client.publish tl, star.id
       end
-      [star, *timelines]
+      [star, *feeds]
     end
 
     def self.search(query = {}, options = {})

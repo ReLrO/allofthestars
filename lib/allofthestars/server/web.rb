@@ -120,11 +120,11 @@ module AllOfTheStars
 
       if !star
         start = Time.now
-        star, *timelines = Star.publish(data)
+        star, *feeds = Star.publish(data)
 
         response['X-Runtime'] += "#{Time.now-start}; "
 
-        response['X-Timelines'] = timelines.join(', ')
+        response['X-Feeds']  = feeds.join(', ')
         response['Location'] = "/stars/#{star.id}"
         [201, star.to_json]
       else
