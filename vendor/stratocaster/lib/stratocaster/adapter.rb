@@ -23,6 +23,7 @@ class Stratocaster::Adapter
   attr_reader :client
 
   # Returns a Hash of options to customize the Feed behavior.
+  #
   # per_page - A Fixnum specifying the page size for individual query
   #            results.
   attr_reader :options
@@ -37,39 +38,39 @@ class Stratocaster::Adapter
   # Public: Stores the given Message ID in the Feed identified by
   # the given key.
   #
-  # keys    - An Array of String keys of Feed.
+  # feeds   - An Array of Feeds.
   # message - The same Hash from Stratocaster#receive.
   #
   # Returns nothing.
-  def store(keys, message)
+  def store(feeds, message)
     raise NotImplementedError
   end
 
   # Public: Queries the Feed for a page of Message IDs.
   #
-  # key - The String key of the Feed.
-  # num - The Fixnum page number.
+  # feed - The Feed.
+  # num  - The Fixnum page number.
   #
   # Returns an Array of Message IDs.
-  def page(key, num)
+  def page(feed, num)
     raise NotImplementedError
   end
 
   # Public: Counts the Messages stored in a Feed.
   #
-  # key - The String key of the Feed.
+  # feed - The Feed.
   #
   # Returns a Fixnum size.
-  def count(key)
+  def count(feed)
     raise NotImplementedError
   end
 
   # Public: Clears all Messages stored in a Feed.
   #
-  # key - The String key of the Feed.
+  # feed - The Feed.
   #
   # Returns nothing.
-  def clear(key)
+  def clear(feed)
     raise NotImplementedError
   end
 

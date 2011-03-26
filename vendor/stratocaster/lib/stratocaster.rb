@@ -26,16 +26,15 @@ class Stratocaster
   #                   user that created the message.
   #           payload - A Hash holding custom values for the Message.
   #
-  # Returns an Array of String keys of Feeds that this message was
-  # delivered to.
+  # Returns an Array of  Feeds that this message was delivered to.
   def receive(message)
-    keys = @feeds.map do |feed|
+    feeds = @feeds.map do |feed|
       feed.deliver(message) if feed.accept?(message)
     end
 
-    keys.flatten!
-    keys.compact!
-    keys
+    feeds.flatten!
+    feeds.compact!
+    feeds
   end
 end
 

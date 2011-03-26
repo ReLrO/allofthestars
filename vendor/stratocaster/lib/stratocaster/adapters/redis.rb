@@ -1,9 +1,9 @@
 class Stratocaster::Adapters::Redis < Stratocaster::Adapter
-  def store(keys, message)
+  def store(feeds, message)
     id = message['id'].to_s
     @client.pipelined do
-      keys.each do |key|
-        redis_key = key_for(key)
+      feeds.each do |feed|
+        redis_key = key_for(feed)
         @client.lpush(redis_key, id)
         if (max = @options[:max]) > 0
           @client.ltrim(redis_key, 0, max-1)
@@ -12,20 +12,28 @@ class Stratocaster::Adapters::Redis < Stratocaster::Adapter
     end
   end
 
-  def page(key, num)
+  def page(feed, num)
     off = offset_for(num)
-    @client.lrange(key_for(key), off, off + @options[:per_page] - 1) || []
+    @client.lrange(key_for(feed), off, off + @options[:per_page] - 1) || []
   end
 
-  def key_for(key)
-    [@options[:prefix], key].compact.join(":")
+  def key_for(feed)
+    prefix = feed.class.name.dup
+    prefix.sub! /.*:/, ''
+    prefix.downcase!
+    pieces = [@options[:prefix], prefix]
+    feed.keys.each do |key|
+      pieces << feed[key]
+    end
+    pieces.compact!
+    pieces * ":"
   end
 
-  def count(key)
-    @client.llen(key)
+  def count(feed)
+    @client.llen(key_for(feed))
   end
 
-  def clear(key)
-    @client.del(key)
+  def clear(feed)
+    @client.del(key_for(feed))
   end
 end

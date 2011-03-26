@@ -4,8 +4,10 @@ class StratocasterTest < Test::Unit::TestCase
   class CommentFeed < Stratocaster::Feed
     adapters << Stratocaster::Adapters::Memory.new({})
 
-    key_format "comment:%s" do |msg|
-      msg['payload']['comment']
+    on_receive do |msg|
+      if comment = msg['payload']['comment']
+        {:comment => comment}
+      end
     end
   end
 
@@ -21,6 +23,9 @@ class StratocasterTest < Test::Unit::TestCase
 
   def test_returns_list_of_delivered_feed_keys
     assert_equal [], @strat.receive(@message)
-    assert_equal %w(comment:5), @strat.receive(@comment)
+    feeds = @strat.receive(@comment)
+    feed  = feeds.shift
+    assert_equal 0, feeds.size
+    assert_equal 5, feed[:comment]
   end
 end

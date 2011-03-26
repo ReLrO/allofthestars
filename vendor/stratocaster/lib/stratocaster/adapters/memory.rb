@@ -1,27 +1,32 @@
 class Stratocaster::Adapters::Memory < Stratocaster::Adapter
-  def store(keys, message)
+  def store(feeds, message)
     id  = message['id'].to_s
-    keys.each do |key|
+    feeds.each do |feed|
+      key = key_for(feed)
       (@client[key] ||= []).unshift id
     end
   end
 
-  def page(key, num)
-    arr = @client[key]
+  def page(feed, num)
+    arr = @client[key_for(feed)]
     return [] if !arr
     offset = offset_for(num)
     arr[offset...@options[:per_page]*num]
   end
 
-  def count(key)
-    if arr = @client[key]
+  def count(feed)
+    if arr = @client[key_for(feed)]
       arr.size
     else
       0
     end
   end
 
-  def clear(key)
-    @client.delete(key)
+  def clear(feed)
+    @client.delete(key_for(feed))
+  end
+
+  def key_for(feed)
+    feed.data
   end
 end

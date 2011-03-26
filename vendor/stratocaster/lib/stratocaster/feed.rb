@@ -1,7 +1,8 @@
 # A Feed is responsible for deciding which Messages it can receive,
 # storing the Message IDs in the Adapters, and retrieving them.
-# Feeds should be subclassed to define custom key names and
-# acceptance conditions.
+# Feeds process messages into Feed#data, a hash with just enough information
+# for an adapter to store it.  Feeds should be subclassed to define custom
+# callbacks that handle received messages and acceptance conditions.
 class Stratocaster::Feed
   class << self
     attr_writer :adapters
@@ -31,13 +32,13 @@ class Stratocaster::Feed
   #
   # Returns true if the Message is acceptable, or false.
   def self.accept?(message)
-    block = @accept_block || (@key_block.arity == 1 && @key_block)
+    block = @accept_block || (@receive_block.arity == 1 && @receive_block)
     value = block && block.call(message)
     value.respond_to?(:size) ? value.size > 0 : !!value
   end
 
   # Public: Sets a block condition used to determine if a message is valid
-  # for this feed.  Use the #key_format block if this is not set.
+  # for this feed.  Use the #on_receive block if this is not set.
   #
   # Yields a Block with a single Message argument.
   # Returns nothing.
@@ -49,82 +50,63 @@ class Stratocaster::Feed
   #
   # message - The same Hash from Stratocaster#receive.
   #
-  # Returns an Array of String keys of Feeds.
+  # Returns an Array of Feeds.
   def self.deliver(message)
-    keys = keys_for(message)
+    feeds = feeds_for(message)
     adapters.each do |adapter|
-      adapter.store(keys, message)
+      adapter.store(feeds, message)
     end
-    keys
+    feeds
   end
 
-  # Public: Creates a unique Feed key.  The key is used to identify
-  # where the Message is added in the Adapter.  In Redis, it'd be used
-  # to build the key of a Redis List.  The generated key of the same
-  # Message in two Feeds are probably going to be different.
+  # Public: Scans the message for the instances of this Feed that this message
+  # will be delivered to.
   #
-  # message - The same Hash from Stratocaster#receive.
-  #
-  # Returns an Array of String keys.
-  def self.keys_for(message)
-    keys = []
-    if @key_block.arity == 2
-      @key_block.call(message, keys)
-      keys.map { |k| key *k }
+  # Returns an Array of Feed instances.
+  def self.feeds_for(message)
+    feeds = []
+    if @receive_block.arity == 2
+      @receive_block.call(message, feeds)
+      feeds.map { |data| new(data) }
     else
-      keys << key(*@key_block.call(message))
+      feeds << new(@receive_block.call(message))
     end
   end
 
-  # Public: Creates a unique Feed key using the #key_format.
+  # Public: Sets the block that is used to turn a received message into
+  # the Feed data that adapters use.  The block yields either just the message,
+  # or a message and an array if multiple feeds are used for a single message.
   #
-  # *args - Array of arguments to use to format the #key_format String.
-  #
-  # Returns a String.
-  def self.key(*args)
-    args.flatten!
-    key_format % args
-  end
-
-  # Public: Either sets or gets the String format used to build the Feed
-  # key.  The format should take the same number of arguments that the
-  # initializer of the custom Feed class takes.
-  #
-  #     class MyFeed < Stratocaster::Feed
-  #       key_format "type:%s:%d" do |msg|
-  #         [msg['type'], msg['type_id']]
+  #     class UserFeed < Stratocaster::Feed
+  #       on_receive do |msg|
+  #         {:user => msg[:user_id]}
   #       end
   #     end
   #
-  #     tl = Feed.new('object', 5)
-  #     tl.key # => "type:object:5"
+  #     class WordFeed < Stratocaster::Feed
+  #       on_receive do |msg, feeds|
+  #         msg.content.split(' ').each do |word|
+  #           feeds << {:word => word}
+  #         end
+  #       end
+  #     end
   #
-  # str - Optional String that resets the key format.
-  #
-  # Returns the String format.
-  def self.key_format(str = nil)
-    if str
-      @key_format = str
-      @key_block  = Proc.new
-    end
-
-    @key_format
+  # Returns nothing.
+  def self.on_receive
+    @receive_block = Proc.new
   end
 
-  # Returns the String key of this Feed instance.
-  attr_reader :key
-
-  # Returns the Adapter used for queries on this Feed instance.
-  attr_reader :default_adapter
+  attr_reader :data
+  attr_reader :options
 
   # Initializes a new Feed instance with this Message for querying
   # purposes.
   #
   # message - The same Hash from Stratocaster#receive.
   # options - Optional Hash (reserved for future use).
-  def initialize(*args)
-    @key = self.class.key(*args)
-    @default_adapter = self.class.adapters.first
+  def initialize(data = {}, options = {})
+    @data    = data
+    @options = options
   end
 
   # Public: Queries the default Adapter for the _n_ page of Message IDs.
@@ -133,20 +115,43 @@ class Stratocaster::Feed
   #
   # Returns an Array of Message IDs.
   def page(num)
-    default_adapter.page(@key, num)
+    adapter.page(self, num)
   end
 
   # Public: Counts the number of Messages in this Feed.
   #
   # Returns a Fixnum size.
   def count
-    default_adapter.count(@key)
+    adapter.count(self)
   end
 
   # Public: Clears the Messages in this Feed.
   #
   # Returns nothing.
   def clear
-    default_adapter.clear(@key)
+    adapter.clear(self)
+  end
+
+  # Public: Accesses a value from the Feed#data by key.
+  #
+  # Returns a String or Fixnum, typically.
+  def [](key)
+    @data[key]
+  end
+
+# Ruby 1.9 has ordered hashes
+if RUBY_VERSION =~ /^1\.9/
+  def keys
+    @data.keys
+  end
+
+else
+  def keys
+    @data.keys.sort
+  end
+end
+
+  def adapter
+    @adapter ||= options[:adapter] || self.class.adapters.first
   end
 end
