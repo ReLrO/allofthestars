@@ -30,9 +30,9 @@ module AllOfTheStars
 
   module Feeds
     class Type < Stratocaster::Feed
-      adapter Stratocaster::Adapters::Riak.new(AllOfTheStars.riak_client['stratocaster'])
       adapter Stratocaster::Adapters::Redis.new(AllOfTheStars.redis_client,
                                                 :prefix => 'strat')
+      adapter Stratocaster::Adapters::Riak.new(AllOfTheStars.riak_client['stratocaster'])
 
       on_receive do |msg|
         {:cluster => msg.cluster_id, :type => msg.type}
