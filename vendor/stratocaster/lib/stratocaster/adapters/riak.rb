@@ -8,8 +8,14 @@ require 'set'
 #
 # TODO: Allow configurable sortable field.
 class Stratocaster::Adapters::Riak < Stratocaster::Adapter
+  def initialize(client, options = {})
+    super
+    @options[:time_field] ||= 'created_at'
+    @options[:id_field]   ||= 'id'
+  end
+
   def store(feeds, message)
-    time = message['created_at'].to_i
+    time = message[@options[:time_field]].to_i
     max  = @options[:max]
     max  = nil if max < 1
     feeds.each do |feed|
@@ -40,7 +46,7 @@ class Stratocaster::Adapters::Riak < Stratocaster::Adapter
       pieces << feed[key]
     end
     pieces.compact!
-    pieces * ":"
+    pieces * "."
   end
 
   def fetch(key)
@@ -63,13 +69,14 @@ class Stratocaster::Adapters::Riak < Stratocaster::Adapter
   end
 
   def settle_conflict(obj)
+    id_field = @options[:id_field]
     set = Set.new
     new_obj = @client.new(obj.key)
     new_obj.vclock = obj.vclock
     new_obj.data = []
     obj.siblings.each do |sibling|
       sibling.data.each do |(time, hash)|
-        id = hash['id']
+        id = hash[id_field]
         next if set.include?(id)
         set << id
         new_obj.data << [time, hash]
