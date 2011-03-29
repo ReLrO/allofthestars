@@ -91,4 +91,5 @@ end
 module Stratocaster::Adapters
   autoload :Memory, 'stratocaster/adapters/memory'
   autoload :Redis,  'stratocaster/adapters/redis'
+  autoload :Riak,   'stratocaster/adapters/riak'
 end

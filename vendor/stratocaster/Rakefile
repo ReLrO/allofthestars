@@ -79,7 +79,26 @@ end
 #
 #############################################################################
 
-
+namespace :riak do
+  task :clear do
+    require 'open-uri'
+    require 'riak/client'
+    client = Riak::Client.new
+    url    = "#{client.http.root_uri.to_s}/#{client.prefix}?buckets=true"
+    open(url) do |f|
+      data = JSON.parse(f.read)
+      data['buckets'].each do |name|
+        next if name !~ /^strat-/
+        puts name
+        bucket = client[name]
+        bucket.keys.each do |key|
+          puts "  #{key}"
+          bucket.delete(key)
+        end
+      end
+    end
+  end
+end
 
 #############################################################################
 #

@@ -19,12 +19,8 @@ class Stratocaster
   # stored in some other ActiveModel-compatible store (ActiveRecord, ToyStore,
   # etc).
   #
-  # message - A Hash:
-  #           id - The String Message ID.
-  #           created_at - The Time the Message was created.
-  #           actor - A Hash with at least an `id` property to identify the
-  #                   user that created the message.
-  #           payload - A Hash holding custom values for the Message.
+  # message - An ActiveModel-compatible object.  Needs to respond to #id and
+  #           #created_at (depending on the Adapter).
   #
   # Returns an Array of  Feeds that this message was delivered to.
   def receive(message)

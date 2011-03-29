@@ -30,6 +30,7 @@ module AllOfTheStars
 
   module Feeds
     class Type < Stratocaster::Feed
+      adapter Stratocaster::Adapters::Riak.new(AllOfTheStars.riak_client['stratocaster'])
       adapter Stratocaster::Adapters::Redis.new(AllOfTheStars.redis_client,
                                                 :prefix => 'strat')
 
@@ -39,7 +40,8 @@ module AllOfTheStars
     end
 
     class Cluster < Stratocaster::Feed
-      adapter Type.adapters.first
+      adapter Type.adapters[0]
+      adapter Type.adapters[1]
 
       on_receive do |msg|
         {:cluster => msg.cluster_id}
@@ -48,7 +50,8 @@ module AllOfTheStars
 
     class HashTag < Stratocaster::Feed
       extend Twitter::Extractor
-      adapter Type.adapters.first
+      adapter Type.adapters[0]
+      adapter Type.adapters[1]
 
       on_receive do |msg, feeds|
         extract_hashtags(msg.content).each do |hashtag|
@@ -63,7 +66,8 @@ module AllOfTheStars
 
     class ScreenName < Stratocaster::Feed
       extend Twitter::Extractor
-      adapter Type.adapters.first
+      adapter Type.adapters[0]
+      adapter Type.adapters[1]
 
       on_receive do |msg, feeds|
         extract_mentioned_screen_names(msg.content).each do |name|
